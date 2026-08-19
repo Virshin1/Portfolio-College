@@ -84,7 +84,7 @@ export const ProjectsSection: React.FC = () => {
           {filteredProjects.map((project) => (
             <div
               key={project.id}
-              className="glass-panel p-6 rounded-xl border border-zinc-800/80 flex flex-col justify-between group hover:border-zinc-500 transition-all duration-300 relative overflow-hidden"
+              className="glass-panel p-6 rounded-xl border border-zinc-800/80 flex flex-col justify-between group hover:border-zinc-700/80 transition-colors duration-250 relative overflow-hidden"
             >
               {/* Top Bar */}
               <div>

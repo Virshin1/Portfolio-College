@@ -1,4 +1,4 @@
-You are given a task to integrate an existing React component in the codebase
+'You are given a task to integrate an existing React component in the codebase
 
 The codebase should support:
 - shadcn project structure  
@@ -11,478 +11,85 @@ Determine the default path for components and styles.
 If default path for components is not /components/ui, provide instructions on why it's important to create this folder
 Copy-paste this component to /components/ui folder:
 ```tsx
-synthetic-hero.tsx
-"use client";
+hero-dithering-card.tsx
+import { ArrowRight } from "lucide-react"
+import { useState, Suspense, lazy } from "react"
 
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { useMemo, useRef } from "react";
-import * as THREE from "three";
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
-import { SplitText } from "gsap/SplitText";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-
-gsap.registerPlugin(SplitText, useGSAP);
-
-interface ShaderPlaneProps {
-	vertexShader: string;
-	fragmentShader: string;
-	uniforms: { [key: string]: { value: unknown } };
-}
-
-const ShaderPlane = ({
-	vertexShader,
-	fragmentShader,
-	uniforms,
-}: ShaderPlaneProps) => {
-	const meshRef = useRef<THREE.Mesh>(null);
-	const { size } = useThree();
-
-	useFrame((state) => {
-		if (meshRef.current) {
-			const material = meshRef.current.material as THREE.ShaderMaterial;
-			material.uniforms.u_time.value = state.clock.elapsedTime * 0.5;
-			material.uniforms.u_resolution.value.set(size.width, size.height, 1.0);
-		}
-	});
-
-	return (
-		<mesh ref={meshRef}>
-			<planeGeometry args={[2, 2]} />
-			<shaderMaterial
-				vertexShader={vertexShader}
-				fragmentShader={fragmentShader}
-				uniforms={uniforms}
-				side={THREE.FrontSide}
-				depthTest={false}
-				depthWrite={false}
-			/>
-		</mesh>
-	);
-};
-
-const vertexShader = `
-  varying vec2 vUv;
-  void main() {
-    vUv = uv;
-    gl_Position = vec4(position, 1.0);
-  }
-`;
-
-const fragmentShader = `
-  precision highp float;
-
-  varying vec2 vUv;
-  uniform float u_time;
-  uniform vec3 u_resolution;
-  uniform sampler2D u_channel0;
-
-  vec2 toPolar(vec2 p) {
-      float r = length(p);
-      float a = atan(p.y, p.x);
-      return vec2(r, a);
-  }
-
-  vec2 fromPolar(vec2 polar) {
-      return vec2(cos(polar.y), sin(polar.y)) * polar.x;
-  }
-
-  void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-      vec2 p = 6.0 * ((fragCoord.xy - 0.5 * u_resolution.xy) / u_resolution.y);
-
-      vec2 polar = toPolar(p);
-      float r = polar.x;
-      float a = polar.y;
-
-      vec2 i = p;
-      float c = 0.0;
-      float rot = r + u_time + p.x * 0.100;
-      for (float n = 0.0; n < 4.0; n++) {
-          float rr = r + 0.15 * sin(u_time*0.7 + float(n) + r*2.0);
-          p *= mat2(
-              cos(rot - sin(u_time / 10.0)), sin(rot),
-              -sin(cos(rot) - u_time / 10.0), cos(rot)
-          ) * -0.25;
-
-          float t = r - u_time / (n + 30.0);
-          i -= p + sin(t - i.y) + rr;
-
-          c += 2.2 / length(vec2(
-              (sin(i.x + t) / 0.15),
-              (cos(i.y + t) / 0.15)
-          ));
-      }
-
-      c /= 8.0;
-
-      vec3 baseColor = vec3(0.2, 0.7, 0.5);
-      vec3 finalColor = baseColor * smoothstep(0.0, 1.0, c * 0.6);
-
-      fragColor = vec4(finalColor, 1.0);
-  }
-
-  void main() {
-      vec4 fragColor;
-      vec2 fragCoord = vUv * u_resolution.xy;
-      mainImage(fragColor, fragCoord);
-      gl_FragColor = fragColor;
-  }
-`;
-
-interface HeroProps {
-	title: string;
-	description: string;
-	badgeText?: string;
-	badgeLabel?: string;
-	ctaButtons?: Array<{ text: string; href?: string; primary?: boolean }>;
-	microDetails?: Array<string>;
-}
-
-const SyntheticHero = ({
-	title = "An experiment in light, motion, and the quiet chaos between.",
-	description = "Experience a new dimension of interaction — fluid, tactile, and alive. Designed for creators who see beauty in motion.",
-	badgeText = "React Three Fiber",
-	badgeLabel = "Experience",
-	ctaButtons = [
-		{ text: "Explore the Canvas", href: "#explore", primary: true },
-		{ text: "Learn More", href: "#learn-more" },
-	],
-	microDetails = [
-		"Immersive shader landscapes",
-		"Hand-tuned motion easing",
-		"Responsive, tactile feedback",
-	],
-}: HeroProps) => {
-	const sectionRef = useRef<HTMLElement | null>(null);
-	const badgeWrapperRef = useRef<HTMLDivElement | null>(null);
-	const headingRef = useRef<HTMLHeadingElement | null>(null);
-	const paragraphRef = useRef<HTMLParagraphElement | null>(null);
-	const ctaRef = useRef<HTMLDivElement | null>(null);
-	const microRef = useRef<HTMLUListElement | null>(null);
-	const shaderUniforms = useMemo(
-		() => ({
-			u_time: { value: 0 },
-			u_resolution: { value: new THREE.Vector3(1, 1, 1) },
-		}),
-		[],
-	);
-
-	useGSAP(
-		() => {
-			if (!headingRef.current) return;
-
-			document.fonts.ready.then(() => {
-				const split = new SplitText(headingRef.current!, {
-					type: "lines",
-					wordsClass: "hero-lines",
-				});
-
-				gsap.set(split.lines, {
-					filter: "blur(16px)",
-					yPercent: 24,
-					autoAlpha: 0,
-					scale: 1.04,
-					transformOrigin: "50% 100%",
-				});
-
-				if (badgeWrapperRef.current) {
-					gsap.set(badgeWrapperRef.current, { autoAlpha: 0, y: -8 });
-				}
-				if (paragraphRef.current) {
-					gsap.set(paragraphRef.current, { autoAlpha: 0, y: 8 });
-				}
-				if (ctaRef.current) {
-					gsap.set(ctaRef.current, { autoAlpha: 0, y: 8 });
-				}
-
-				const microItems = microRef.current
-					? Array.from(microRef.current.querySelectorAll("li"))
-					: [];
-				if (microItems.length > 0) {
-					gsap.set(microItems, { autoAlpha: 0, y: 6 });
-				}
-
-				const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-
-				if (badgeWrapperRef.current) {
-					tl.to(
-						badgeWrapperRef.current,
-						{ autoAlpha: 1, y: 0, duration: 0.5 },
-						0,
-					);
-				}
-
-				tl.to(
-					split.lines,
-					{
-						filter: "blur(0px)",
-						yPercent: 0,
-						autoAlpha: 1,
-						scale: 1,
-						duration: 0.9,
-						stagger: 0.12,
-					},
-					0.1,
-				);
-
-				if (paragraphRef.current) {
-					tl.to(
-						paragraphRef.current,
-						{ autoAlpha: 1, y: 0, duration: 0.5 },
-						"-=0.55",
-					);
-				}
-
-				if (ctaRef.current) {
-					tl.to(
-						ctaRef.current,
-						{ autoAlpha: 1, y: 0, duration: 0.5 },
-						"-=0.35",
-					);
-				}
-
-				if (microItems.length > 0) {
-					tl.to(
-						microItems,
-						{ autoAlpha: 1, y: 0, duration: 0.5, stagger: 0.1 },
-						"-=0.25",
-					);
-				}
-			});
-		},
-		{ scope: sectionRef },
-	);
-
-	return (
-		<section
-			ref={sectionRef}
-			className="relative flex items-center justify-center min-h-screen overflow-hidden"
-		>
-			<div className="absolute inset-0 z-0">
-				<Canvas>
-					<ShaderPlane
-						vertexShader={vertexShader}
-						fragmentShader={fragmentShader}
-						uniforms={shaderUniforms}
-					/>
-				</Canvas>
-			</div>
-
-			<div className="relative z-10 flex flex-col items-center text-center px-6">
-				<div ref={badgeWrapperRef}>
-					<Badge className="mb-6 bg-white/10 hover:bg-white/15 text-emerald-300 backdrop-blur-md border border-white/20 uppercase tracking-wider font-medium flex items-center gap-2 px-4 py-1.5">
-						<span className="text-[10px] font-light tracking-[0.18em] text-emerald-100/80">
-							{badgeLabel}
-						</span>
-						<span className="h-1 w-1 rounded-full bg-emerald-200/60" />
-						<span className="text-xs font-light tracking-tight text-emerald-200">
-							{badgeText}
-						</span>
-					</Badge>
-				</div>
-
-				<h1
-					ref={headingRef}
-					className="text-5xl md:text-7xl max-w-4xl font-light tracking-tight text-white mb-4"
-				>
-					{title}
-				</h1>
-
-				<p
-					ref={paragraphRef}
-					className="text-emerald-50/80 text-lg max-w-2xl mx-auto mb-10 font-light"
-				>
-					{description}
-				</p>
-
-				<div
-					ref={ctaRef}
-					className="flex flex-wrap items-center justify-center gap-4"
-				>
-					{ctaButtons.map((button, index) => {
-						const isPrimary = button.primary ?? index === 0;
-						const classes = isPrimary
-							? "px-8 py-3 rounded-xl text-base font-medium backdrop-blur-lg bg-emerald-400/80 hover:bg-emerald-300/80 shadow-lg transition-all cursor-pointer"
-							: "px-8 py-3 rounded-xl text-base font-medium border-white/30 text-white hover:bg-white/10 backdrop-blur-lg transition-all cursor-pointer";
-
-						if (button.href) {
-							return (
-								<Button
-									key={index}
-									variant={isPrimary ? undefined : "outline"}
-									className={classes}
-									asChild
-								>
-									<a href={button.href}>{button.text}</a>
-								</Button>
-							);
-						}
-
-						return (
-							<Button
-								key={index}
-								variant={isPrimary ? undefined : "outline"}
-								className={classes}
-							>
-								{button.text}
-							</Button>
-						);
-					})}
-				</div>
-
-				{microDetails.length > 0 && (
-					<ul
-						ref={microRef}
-						className="mt-8 flex flex-wrap justify-center gap-6 text-xs font-light tracking-tight text-emerald-100/70"
-					>
-						{microDetails.map((detail, index) => (
-							<li key={index} className="flex items-center gap-2">
-								<span className="h-1 w-1 rounded-full bg-emerald-200/60" />
-								{detail}
-							</li>
-						))}
-					</ul>
-				)}
-			</div>
-		</section>
-	);
-};
-
-export default SyntheticHero;
-
-
-demo.tsx
-import SyntheticHero from "@/components/ui/synthetic-hero";
-
-export default function DemoOne() {
-  return (
-    <div className="w-screen h-screen flex flex-col relative">
-      <SyntheticHero
-        title="An experiment in light, motion, and the quiet chaos between."
-        description="Experience a new dimension of interaction — fluid, tactile, and alive. Designed for creators who see beauty in motion."
-        badgeText="React Three Fiber"
-        badgeLabel="Experience"
-        ctaButtons={[
-          { text: "Explore the Canvas", href: "#explore", primary: true },
-          { text: "Learn More", href: "#learn-more" }
-        ]}
-        microDetails={[
-          "Immersive shader landscapes",
-          "Hand-tuned motion easing",
-          "Responsive, tactile feedback",
-        ]}
-      />
-    </div>
-  );
-}
-```
-
-Copy-paste these files for dependencies:
-```tsx
-shadcn/badge
-import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-
-import { cn } from "@/lib/utils"
-
-const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-  {
-    variants: {
-      variant: {
-        default:
-          "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
-        secondary:
-          "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        destructive:
-          "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
-        outline: "text-foreground",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-    },
-  },
+const Dithering = lazy(() => 
+  import("@paper-design/shaders-react").then((mod) => ({ default: mod.Dithering }))
 )
 
-export interface BadgeProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {}
+export function CTASection() {
+  const [isHovered, setIsHovered] = useState(false)
 
-function Badge({ className, variant, ...props }: BadgeProps) {
   return (
-    <div className={cn(badgeVariants({ variant }), className)} {...props} />
+    <section className="py-12 w-full flex justify-center items-center px-4 md:px-6">
+      <div 
+        className="w-full max-w-7xl relative"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <div className="relative overflow-hidden rounded-[48px] border border-border bg-card shadow-sm min-h-[600px] md:min-h-[600px] flex flex-col items-center justify-center duration-500">
+             <Suspense fallback={<div className="absolute inset-0 bg-muted/20" />}>
+            <div className="absolute inset-0 z-0 pointer-events-none opacity-40 dark:opacity-30 mix-blend-multiply dark:mix-blend-screen">
+              <Dithering
+                colorBack="#00000000" // Transparent
+                colorFront="#EC4E02"  // Accent
+                shape="warp"
+                type="4x4"
+                speed={isHovered ? 0.6 : 0.2}
+                className="size-full"
+                minPixelRatio={1}
+              />
+            </div>
+          </Suspense>
+
+          <div className="relative z-10 px-6 max-w-4xl mx-auto text-center flex flex-col items-center">
+            
+            <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-primary/10 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary backdrop-blur-sm">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+              </span>
+              AI-Powered Writing
+            </div>
+
+            {/* Headline */}
+            <h2 className="font-serif text-5xl md:text-7xl lg:text-8xl font-medium tracking-tight text-foreground mb-8 leading-[1.05]">
+              Your words, <br />
+              <span className="text-foreground/80">delivered perfectly.</span>
+            </h2>
+            
+            {/* Description */}
+            <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mb-12 leading-relaxed">
+              Join 2,847 founders using the only AI that understands the nuance of your voice. 
+              Clean, precise, and uniquely yours.
+            </p>
+
+            {/* Button */}
+            <button className="group relative inline-flex h-14 items-center justify-center gap-3 overflow-hidden rounded-full bg-primary px-12 text-base font-medium text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:scale-105 active:scale-95 hover:ring-4 hover:ring-primary/20">
+              <span className="relative z-10">Start Typing</span>
+              <ArrowRight className="h-5 w-5 relative z-10 transition-transform duration-300 group-hover:translate-x-1" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
   )
 }
 
-export { Badge, badgeVariants }
+demo.tsx
+import { CTASection } from "@/components/ui/hero-dithering-card";
 
-```
-```tsx
-shadcn/button
-import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
-import { cva, type VariantProps } from "class-variance-authority"
-
-import { cn } from "@/lib/utils"
-
-const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
-  {
-    variants: {
-      variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
-        destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
-        secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
-      },
-      size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
-        icon: "h-10 w-10",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
-  },
-)
-
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
-  asChild?: boolean
+export default function DemoOne() {
+  return <CTASection />;
 }
-
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button"
-    return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        {...props}
-      />
-    )
-  },
-)
-Button.displayName = "Button"
-
-export { Button, buttonVariants }
 
 ```
 
 Install NPM dependencies:
 ```bash
-gsap, three, @gsap/react, @react-three/fiber, class-variance-authority, @radix-ui/react-slot
+lucide-react
 ```
 
 Implementation Guidelines

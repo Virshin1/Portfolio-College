@@ -13,7 +13,7 @@ import { TerminalView } from './components/terminal/TerminalView';
 import { ModeToggle } from './components/common/ModeToggle';
 import { ResumeModal } from './components/common/ResumeModal';
 import { SpiralAnimation } from './components/ui/spiral-animation';
-import { SyntheticShaderBg } from './components/ui/synthetic-shader-bg';
+import { DitheringBackground } from './components/ui/dithering-background';
 
 export function App() {
   const [view, setView] = useState<'intro' | 'minimalist' | 'terminal'>('intro');
@@ -114,8 +114,14 @@ export function App() {
       <div className={`transition-opacity duration-200 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
         {view === 'minimalist' ? (
           <div className="relative flex flex-col min-h-screen animate-in fade-in duration-200">
-            {/* Full-Page Fixed WebGL Synthetic Shader Background */}
-            <SyntheticShaderBg opacity={0.26} speed={0.3} />
+            {/* Full-Page Dithering Warp Background from landing.md */}
+            <DitheringBackground
+              opacity={0.22}
+              speed={0.2}
+              colorFront="#71717a"
+              shape="warp"
+              type="4x4"
+            />
 
             <Navbar
               currentMode={view}

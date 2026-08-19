@@ -201,12 +201,6 @@ export const portfolioData: PortfolioData = {
 
   accomplishments: [
     {
-      title: "Top 5 Finalist — Buildathon 3.0",
-      event: "College Hackathon Competition",
-      description: "Designed, engineered, and pitched a high-impact technical solution within a 24hr hackathon sprint, securing a top-5 ranking.",
-      badge: "Top 5 Finalist",
-    },
-    {
       title: "MumbaiHacks Competitor",
       event: "MumbaiHacks Hackathon",
       description: "Participated in Mumbai flagship hackathon, building collaborative real-world solutions alongside industry engineers.",

@@ -1,31 +1,31 @@
 import React from 'react';
 import { portfolioData } from '../../data/portfolioData';
-import { Terminal, Database, Cloud, Code2 } from 'lucide-react';
+import { Terminal, Code, Cpu, Cloud, Wrench } from 'lucide-react';
 
 export const SkillsSection: React.FC = () => {
-  const getCategoryIcon = (category: string) => {
-    if (category.toLowerCase().includes('cloud') || category.toLowerCase().includes('devops')) {
-      return <Cloud className="w-4 h-4 text-zinc-400" />;
-    }
-    if (category.toLowerCase().includes('database') || category.toLowerCase().includes('monitoring')) {
-      return <Database className="w-4 h-4 text-zinc-400" />;
-    }
-    if (category.toLowerCase().includes('languages')) {
-      return <Terminal className="w-4 h-4 text-zinc-400" />;
-    }
-    return <Code2 className="w-4 h-4 text-zinc-400" />;
-  };
-
   const getLevelPercent = (level: string) => {
     switch (level.toLowerCase()) {
-      case 'expert':
-        return 'w-[92%]';
       case 'advanced':
-        return 'w-[85%]';
+        return 'w-[90%]';
       case 'proficient':
         return 'w-[75%]';
+      case 'intermediate':
+        return 'w-[60%]';
       default:
-        return 'w-[65%]';
+        return 'w-[50%]';
+    }
+  };
+
+  const getCategoryIcon = (category: string) => {
+    switch (category.toLowerCase()) {
+      case 'languages':
+        return <Code className="w-4 h-4 text-zinc-400" />;
+      case 'frameworks':
+        return <Cpu className="w-4 h-4 text-zinc-400" />;
+      case 'cloud & devops':
+        return <Cloud className="w-4 h-4 text-zinc-400" />;
+      default:
+        return <Wrench className="w-4 h-4 text-zinc-400" />;
     }
   };
 
@@ -45,7 +45,7 @@ export const SkillsSection: React.FC = () => {
         {portfolioData.skills.map((cat) => (
           <div
             key={cat.category}
-            className="glass-panel p-6 rounded-xl border border-zinc-800/80 space-y-5 group hover:border-zinc-500 transition-all duration-300"
+            className="glass-panel p-6 rounded-xl border border-zinc-800/80 space-y-5 hover:border-zinc-700/80 transition-colors duration-250"
           >
             <div className="flex items-center justify-between border-b border-zinc-800/80 pb-3">
               <div className="flex items-center gap-2.5">
@@ -69,7 +69,7 @@ export const SkillsSection: React.FC = () => {
                   {/* Subtle sleek progress bar */}
                   <div className="h-1 w-full rounded-full bg-zinc-900 overflow-hidden">
                     <div
-                      className={`h-full rounded-full bg-zinc-400/80 group-hover:bg-white transition-all duration-500 ${getLevelPercent(item.level)}`}
+                      className={`h-full rounded-full bg-zinc-500/80 ${getLevelPercent(item.level)}`}
                     />
                   </div>
                 </div>

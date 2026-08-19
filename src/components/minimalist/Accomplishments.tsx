@@ -1,14 +1,16 @@
 import React from 'react';
 import { portfolioData } from '../../data/portfolioData';
-import { Award, Trophy, Star } from 'lucide-react';
+import { Trophy, Award, Target, Star } from 'lucide-react';
 
 export const Accomplishments: React.FC = () => {
   const getIcon = (index: number) => {
-    switch (index % 3) {
+    switch (index) {
       case 0:
         return <Trophy className="w-4 h-4 text-zinc-300" />;
       case 1:
         return <Award className="w-4 h-4 text-zinc-300" />;
+      case 2:
+        return <Target className="w-4 h-4 text-zinc-300" />;
       default:
         return <Star className="w-4 h-4 text-zinc-300" />;
     }
@@ -26,15 +28,15 @@ export const Accomplishments: React.FC = () => {
         </h3>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {portfolioData.accomplishments.map((acc, index) => (
           <div
             key={acc.title}
-            className="glass-panel p-6 rounded-xl border border-zinc-800/80 space-y-3.5 flex flex-col justify-between hover:border-zinc-500 transition-all duration-300 group"
+            className="glass-panel p-6 rounded-xl border border-zinc-800/80 space-y-3.5 flex flex-col justify-between hover:border-zinc-700/80 transition-colors duration-250 group"
           >
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <div className="p-2 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-300 group-hover:border-zinc-600 transition-colors">
+                <div className="p-2 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-300 transition-colors">
                   {getIcon(index)}
                 </div>
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-zinc-800 text-zinc-400 bg-zinc-900/60">

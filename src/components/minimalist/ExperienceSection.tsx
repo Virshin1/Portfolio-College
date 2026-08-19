@@ -8,23 +8,23 @@ export const ExperienceSection: React.FC = () => {
       <div className="mb-12 space-y-2">
         <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-zinc-500">
           <Briefcase className="w-3.5 h-3.5 text-zinc-400" />
-          <span>02 / Career & Experience</span>
+          <span>02 / Career & Internships</span>
         </div>
         <h3 className="text-3xl sm:text-4xl font-bold font-display text-white">
-          Work History & Contributions
+          Work Experience
         </h3>
       </div>
 
-      <div className="relative pl-6 sm:pl-8 border-l border-zinc-800 space-y-10">
+      <div className="relative pl-6 sm:pl-8 border-l border-zinc-800/80 space-y-10">
         {portfolioData.experiences.map((exp) => (
           <div key={exp.id} className="relative group">
-            {/* Glowing Timeline Node */}
-            <div className="absolute -left-[31px] sm:-left-[39px] top-1 w-4 h-4 rounded-full bg-zinc-950 border-2 border-zinc-500 group-hover:border-white transition-colors flex items-center justify-center">
-              <div className="w-1.5 h-1.5 rounded-full bg-zinc-400 group-hover:bg-white transition-colors" />
+            {/* Subtle Timeline Node */}
+            <div className="absolute -left-[31px] sm:-left-[39px] top-1 w-4 h-4 rounded-full bg-zinc-950 border-2 border-zinc-700 transition-colors flex items-center justify-center">
+              <div className="w-1.5 h-1.5 rounded-full bg-zinc-500 transition-colors" />
             </div>
 
             {/* Experience Card */}
-            <div className="glass-panel p-6 rounded-xl border border-zinc-800/80 space-y-4 hover:border-zinc-500 transition-all duration-300">
+            <div className="glass-panel p-6 rounded-xl border border-zinc-800/80 space-y-4 hover:border-zinc-700/80 transition-colors duration-250">
               <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 border-b border-zinc-800/80 pb-3">
                 <div>
                   <h4 className="text-lg font-bold text-white font-mono">
@@ -60,16 +60,18 @@ export const ExperienceSection: React.FC = () => {
                 ))}
               </div>
 
-              <div className="flex flex-wrap gap-1.5 pt-2">
-                {exp.skills.map((skill) => (
-                  <span
-                    key={skill}
-                    className="text-[11px] font-mono px-2.5 py-0.5 rounded bg-zinc-900/80 border border-zinc-800 text-zinc-400"
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
+              {exp.skills && exp.skills.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 pt-2">
+                  {exp.skills.map((skill) => (
+                    <span
+                      key={skill}
+                      className="text-[11px] font-mono px-2 py-0.5 rounded bg-zinc-900/60 border border-zinc-800/80 text-zinc-400"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         ))}

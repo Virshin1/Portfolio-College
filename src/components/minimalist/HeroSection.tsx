@@ -17,23 +17,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onToggleMode, onOpenRe
       <div className="absolute inset-0 bg-tech-grid opacity-20 pointer-events-none [mask-image:radial-gradient(ellipse_70%_60%_at_50%_20%,#000_60%,transparent_100%)]" />
 
       <div className="max-w-5xl mx-auto w-full relative z-10 space-y-12">
-        {/* Top Status & Badge */}
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full border border-emerald-500/20 bg-emerald-950/40 text-emerald-400 font-mono text-xs shadow-sm backdrop-blur-md">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-            </span>
-            <span>Available for Internships & Engineering Roles</span>
-          </div>
-
-          <div className="text-xs font-mono text-zinc-400 flex items-center gap-3 bg-zinc-950/60 px-3 py-1 rounded-full border border-zinc-800/60 backdrop-blur-sm">
-            <span>NAV-MUMBAI [IST / UTC+5:30]</span>
-            <span className="text-zinc-700">|</span>
-            <span>SYS_OK</span>
-          </div>
-        </div>
-
         {/* Hero Main Header & System HUD Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           {/* Left Column: Headlines & Bio */}

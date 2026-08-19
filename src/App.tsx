@@ -13,6 +13,7 @@ import { TerminalView } from './components/terminal/TerminalView';
 import { ModeToggle } from './components/common/ModeToggle';
 import { ResumeModal } from './components/common/ResumeModal';
 import { SpiralAnimation } from './components/ui/spiral-animation';
+import { SyntheticShaderBg } from './components/ui/synthetic-shader-bg';
 
 export function App() {
   const [view, setView] = useState<'intro' | 'minimalist' | 'terminal'>('intro');
@@ -113,13 +114,16 @@ export function App() {
       <div className={`transition-opacity duration-200 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
         {view === 'minimalist' ? (
           <div className="relative flex flex-col min-h-screen animate-in fade-in duration-200">
+            {/* Full-Page Fixed WebGL Synthetic Shader Background */}
+            <SyntheticShaderBg opacity={0.26} speed={0.3} />
+
             <Navbar
               currentMode={view}
               onToggleMode={handleToggleMode}
               onOpenResume={() => setResumeOpen(true)}
             />
 
-            <main className="flex-1">
+            <main className="flex-1 relative z-10">
               <HeroSection
                 onToggleMode={handleToggleMode}
                 onOpenResume={() => setResumeOpen(true)}

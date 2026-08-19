@@ -11,151 +11,414 @@ Determine the default path for components and styles.
 If default path for components is not /components/ui, provide instructions on why it's important to create this folder
 Copy-paste this component to /components/ui folder:
 ```tsx
-background-paths.tsx
+synthetic-hero.tsx
 "use client";
 
-import { motion } from "framer-motion";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { useMemo, useRef } from "react";
+import * as THREE from "three";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { SplitText } from "gsap/SplitText";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
-function FloatingPaths({ position }: { position: number }) {
-    const paths = Array.from({ length: 36 }, (_, i) => ({
-        id: i,
-        d: `M-${380 - i * 5 * position} -${189 + i * 6}C-${
-            380 - i * 5 * position
-        } -${189 + i * 6} -${312 - i * 5 * position} ${216 - i * 6} ${
-            152 - i * 5 * position
-        } ${343 - i * 6}C${616 - i * 5 * position} ${470 - i * 6} ${
-            684 - i * 5 * position
-        } ${875 - i * 6} ${684 - i * 5 * position} ${875 - i * 6}`,
-        color: `rgba(15,23,42,${0.1 + i * 0.03})`,
-        width: 0.5 + i * 0.03,
-    }));
+gsap.registerPlugin(SplitText, useGSAP);
 
-    return (
-        <div className="absolute inset-0 pointer-events-none">
-            <svg
-                className="w-full h-full text-slate-950 dark:text-white"
-                viewBox="0 0 696 316"
-                fill="none"
-            >
-                <title>Background Paths</title>
-                {paths.map((path) => (
-                    <motion.path
-                        key={path.id}
-                        d={path.d}
-                        stroke="currentColor"
-                        strokeWidth={path.width}
-                        strokeOpacity={0.1 + path.id * 0.03}
-                        initial={{ pathLength: 0.3, opacity: 0.6 }}
-                        animate={{
-                            pathLength: 1,
-                            opacity: [0.3, 0.6, 0.3],
-                            pathOffset: [0, 1, 0],
-                        }}
-                        transition={{
-                            duration: 20 + Math.random() * 10,
-                            repeat: Number.POSITIVE_INFINITY,
-                            ease: "linear",
-                        }}
-                    />
-                ))}
-            </svg>
-        </div>
-    );
+interface ShaderPlaneProps {
+	vertexShader: string;
+	fragmentShader: string;
+	uniforms: { [key: string]: { value: unknown } };
 }
 
-export function BackgroundPaths({
-    title = "Background Paths",
-}: {
-    title?: string;
-}) {
-    const words = title.split(" ");
+const ShaderPlane = ({
+	vertexShader,
+	fragmentShader,
+	uniforms,
+}: ShaderPlaneProps) => {
+	const meshRef = useRef<THREE.Mesh>(null);
+	const { size } = useThree();
 
-    return (
-        <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-white dark:bg-neutral-950">
-            <div className="absolute inset-0">
-                <FloatingPaths position={1} />
-                <FloatingPaths position={-1} />
-            </div>
+	useFrame((state) => {
+		if (meshRef.current) {
+			const material = meshRef.current.material as THREE.ShaderMaterial;
+			material.uniforms.u_time.value = state.clock.elapsedTime * 0.5;
+			material.uniforms.u_resolution.value.set(size.width, size.height, 1.0);
+		}
+	});
 
-            <div className="relative z-10 container mx-auto px-4 md:px-6 text-center">
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 2 }}
-                    className="max-w-4xl mx-auto"
-                >
-                    <h1 className="text-5xl sm:text-7xl md:text-8xl font-bold mb-8 tracking-tighter">
-                        {words.map((word, wordIndex) => (
-                            <span
-                                key={wordIndex}
-                                className="inline-block mr-4 last:mr-0"
-                            >
-                                {word.split("").map((letter, letterIndex) => (
-                                    <motion.span
-                                        key={`${wordIndex}-${letterIndex}`}
-                                        initial={{ y: 100, opacity: 0 }}
-                                        animate={{ y: 0, opacity: 1 }}
-                                        transition={{
-                                            delay:
-                                                wordIndex * 0.1 +
-                                                letterIndex * 0.03,
-                                            type: "spring",
-                                            stiffness: 150,
-                                            damping: 25,
-                                        }}
-                                        className="inline-block text-transparent bg-clip-text 
-                                        bg-gradient-to-r from-neutral-900 to-neutral-700/80 
-                                        dark:from-white dark:to-white/80"
-                                    >
-                                        {letter}
-                                    </motion.span>
-                                ))}
-                            </span>
-                        ))}
-                    </h1>
+	return (
+		<mesh ref={meshRef}>
+			<planeGeometry args={[2, 2]} />
+			<shaderMaterial
+				vertexShader={vertexShader}
+				fragmentShader={fragmentShader}
+				uniforms={uniforms}
+				side={THREE.FrontSide}
+				depthTest={false}
+				depthWrite={false}
+			/>
+		</mesh>
+	);
+};
 
-                    <div
-                        className="inline-block group relative bg-gradient-to-b from-black/10 to-white/10 
-                        dark:from-white/10 dark:to-black/10 p-px rounded-2xl backdrop-blur-lg 
-                        overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
-                    >
-                        <Button
-                            variant="ghost"
-                            className="rounded-[1.15rem] px-8 py-6 text-lg font-semibold backdrop-blur-md 
-                            bg-white/95 hover:bg-white/100 dark:bg-black/95 dark:hover:bg-black/100 
-                            text-black dark:text-white transition-all duration-300 
-                            group-hover:-translate-y-0.5 border border-black/10 dark:border-white/10
-                            hover:shadow-md dark:hover:shadow-neutral-800/50"
-                        >
-                            <span className="opacity-90 group-hover:opacity-100 transition-opacity">
-                                Discover Excellence
-                            </span>
-                            <span
-                                className="ml-3 opacity-70 group-hover:opacity-100 group-hover:translate-x-1.5 
-                                transition-all duration-300"
-                            >
-                                →
-                            </span>
-                        </Button>
-                    </div>
-                </motion.div>
-            </div>
-        </div>
-    );
+const vertexShader = `
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    gl_Position = vec4(position, 1.0);
+  }
+`;
+
+const fragmentShader = `
+  precision highp float;
+
+  varying vec2 vUv;
+  uniform float u_time;
+  uniform vec3 u_resolution;
+  uniform sampler2D u_channel0;
+
+  vec2 toPolar(vec2 p) {
+      float r = length(p);
+      float a = atan(p.y, p.x);
+      return vec2(r, a);
+  }
+
+  vec2 fromPolar(vec2 polar) {
+      return vec2(cos(polar.y), sin(polar.y)) * polar.x;
+  }
+
+  void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+      vec2 p = 6.0 * ((fragCoord.xy - 0.5 * u_resolution.xy) / u_resolution.y);
+
+      vec2 polar = toPolar(p);
+      float r = polar.x;
+      float a = polar.y;
+
+      vec2 i = p;
+      float c = 0.0;
+      float rot = r + u_time + p.x * 0.100;
+      for (float n = 0.0; n < 4.0; n++) {
+          float rr = r + 0.15 * sin(u_time*0.7 + float(n) + r*2.0);
+          p *= mat2(
+              cos(rot - sin(u_time / 10.0)), sin(rot),
+              -sin(cos(rot) - u_time / 10.0), cos(rot)
+          ) * -0.25;
+
+          float t = r - u_time / (n + 30.0);
+          i -= p + sin(t - i.y) + rr;
+
+          c += 2.2 / length(vec2(
+              (sin(i.x + t) / 0.15),
+              (cos(i.y + t) / 0.15)
+          ));
+      }
+
+      c /= 8.0;
+
+      vec3 baseColor = vec3(0.2, 0.7, 0.5);
+      vec3 finalColor = baseColor * smoothstep(0.0, 1.0, c * 0.6);
+
+      fragColor = vec4(finalColor, 1.0);
+  }
+
+  void main() {
+      vec4 fragColor;
+      vec2 fragCoord = vUv * u_resolution.xy;
+      mainImage(fragColor, fragCoord);
+      gl_FragColor = fragColor;
+  }
+`;
+
+interface HeroProps {
+	title: string;
+	description: string;
+	badgeText?: string;
+	badgeLabel?: string;
+	ctaButtons?: Array<{ text: string; href?: string; primary?: boolean }>;
+	microDetails?: Array<string>;
 }
+
+const SyntheticHero = ({
+	title = "An experiment in light, motion, and the quiet chaos between.",
+	description = "Experience a new dimension of interaction — fluid, tactile, and alive. Designed for creators who see beauty in motion.",
+	badgeText = "React Three Fiber",
+	badgeLabel = "Experience",
+	ctaButtons = [
+		{ text: "Explore the Canvas", href: "#explore", primary: true },
+		{ text: "Learn More", href: "#learn-more" },
+	],
+	microDetails = [
+		"Immersive shader landscapes",
+		"Hand-tuned motion easing",
+		"Responsive, tactile feedback",
+	],
+}: HeroProps) => {
+	const sectionRef = useRef<HTMLElement | null>(null);
+	const badgeWrapperRef = useRef<HTMLDivElement | null>(null);
+	const headingRef = useRef<HTMLHeadingElement | null>(null);
+	const paragraphRef = useRef<HTMLParagraphElement | null>(null);
+	const ctaRef = useRef<HTMLDivElement | null>(null);
+	const microRef = useRef<HTMLUListElement | null>(null);
+	const shaderUniforms = useMemo(
+		() => ({
+			u_time: { value: 0 },
+			u_resolution: { value: new THREE.Vector3(1, 1, 1) },
+		}),
+		[],
+	);
+
+	useGSAP(
+		() => {
+			if (!headingRef.current) return;
+
+			document.fonts.ready.then(() => {
+				const split = new SplitText(headingRef.current!, {
+					type: "lines",
+					wordsClass: "hero-lines",
+				});
+
+				gsap.set(split.lines, {
+					filter: "blur(16px)",
+					yPercent: 24,
+					autoAlpha: 0,
+					scale: 1.04,
+					transformOrigin: "50% 100%",
+				});
+
+				if (badgeWrapperRef.current) {
+					gsap.set(badgeWrapperRef.current, { autoAlpha: 0, y: -8 });
+				}
+				if (paragraphRef.current) {
+					gsap.set(paragraphRef.current, { autoAlpha: 0, y: 8 });
+				}
+				if (ctaRef.current) {
+					gsap.set(ctaRef.current, { autoAlpha: 0, y: 8 });
+				}
+
+				const microItems = microRef.current
+					? Array.from(microRef.current.querySelectorAll("li"))
+					: [];
+				if (microItems.length > 0) {
+					gsap.set(microItems, { autoAlpha: 0, y: 6 });
+				}
+
+				const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+				if (badgeWrapperRef.current) {
+					tl.to(
+						badgeWrapperRef.current,
+						{ autoAlpha: 1, y: 0, duration: 0.5 },
+						0,
+					);
+				}
+
+				tl.to(
+					split.lines,
+					{
+						filter: "blur(0px)",
+						yPercent: 0,
+						autoAlpha: 1,
+						scale: 1,
+						duration: 0.9,
+						stagger: 0.12,
+					},
+					0.1,
+				);
+
+				if (paragraphRef.current) {
+					tl.to(
+						paragraphRef.current,
+						{ autoAlpha: 1, y: 0, duration: 0.5 },
+						"-=0.55",
+					);
+				}
+
+				if (ctaRef.current) {
+					tl.to(
+						ctaRef.current,
+						{ autoAlpha: 1, y: 0, duration: 0.5 },
+						"-=0.35",
+					);
+				}
+
+				if (microItems.length > 0) {
+					tl.to(
+						microItems,
+						{ autoAlpha: 1, y: 0, duration: 0.5, stagger: 0.1 },
+						"-=0.25",
+					);
+				}
+			});
+		},
+		{ scope: sectionRef },
+	);
+
+	return (
+		<section
+			ref={sectionRef}
+			className="relative flex items-center justify-center min-h-screen overflow-hidden"
+		>
+			<div className="absolute inset-0 z-0">
+				<Canvas>
+					<ShaderPlane
+						vertexShader={vertexShader}
+						fragmentShader={fragmentShader}
+						uniforms={shaderUniforms}
+					/>
+				</Canvas>
+			</div>
+
+			<div className="relative z-10 flex flex-col items-center text-center px-6">
+				<div ref={badgeWrapperRef}>
+					<Badge className="mb-6 bg-white/10 hover:bg-white/15 text-emerald-300 backdrop-blur-md border border-white/20 uppercase tracking-wider font-medium flex items-center gap-2 px-4 py-1.5">
+						<span className="text-[10px] font-light tracking-[0.18em] text-emerald-100/80">
+							{badgeLabel}
+						</span>
+						<span className="h-1 w-1 rounded-full bg-emerald-200/60" />
+						<span className="text-xs font-light tracking-tight text-emerald-200">
+							{badgeText}
+						</span>
+					</Badge>
+				</div>
+
+				<h1
+					ref={headingRef}
+					className="text-5xl md:text-7xl max-w-4xl font-light tracking-tight text-white mb-4"
+				>
+					{title}
+				</h1>
+
+				<p
+					ref={paragraphRef}
+					className="text-emerald-50/80 text-lg max-w-2xl mx-auto mb-10 font-light"
+				>
+					{description}
+				</p>
+
+				<div
+					ref={ctaRef}
+					className="flex flex-wrap items-center justify-center gap-4"
+				>
+					{ctaButtons.map((button, index) => {
+						const isPrimary = button.primary ?? index === 0;
+						const classes = isPrimary
+							? "px-8 py-3 rounded-xl text-base font-medium backdrop-blur-lg bg-emerald-400/80 hover:bg-emerald-300/80 shadow-lg transition-all cursor-pointer"
+							: "px-8 py-3 rounded-xl text-base font-medium border-white/30 text-white hover:bg-white/10 backdrop-blur-lg transition-all cursor-pointer";
+
+						if (button.href) {
+							return (
+								<Button
+									key={index}
+									variant={isPrimary ? undefined : "outline"}
+									className={classes}
+									asChild
+								>
+									<a href={button.href}>{button.text}</a>
+								</Button>
+							);
+						}
+
+						return (
+							<Button
+								key={index}
+								variant={isPrimary ? undefined : "outline"}
+								className={classes}
+							>
+								{button.text}
+							</Button>
+						);
+					})}
+				</div>
+
+				{microDetails.length > 0 && (
+					<ul
+						ref={microRef}
+						className="mt-8 flex flex-wrap justify-center gap-6 text-xs font-light tracking-tight text-emerald-100/70"
+					>
+						{microDetails.map((detail, index) => (
+							<li key={index} className="flex items-center gap-2">
+								<span className="h-1 w-1 rounded-full bg-emerald-200/60" />
+								{detail}
+							</li>
+						))}
+					</ul>
+				)}
+			</div>
+		</section>
+	);
+};
+
+export default SyntheticHero;
 
 
 demo.tsx
-import { BackgroundPaths } from "@/components/ui/background-paths"
+import SyntheticHero from "@/components/ui/synthetic-hero";
 
-
-export function DemoBackgroundPaths() {
-    return <BackgroundPaths title="Background Paths" />
+export default function DemoOne() {
+  return (
+    <div className="w-screen h-screen flex flex-col relative">
+      <SyntheticHero
+        title="An experiment in light, motion, and the quiet chaos between."
+        description="Experience a new dimension of interaction — fluid, tactile, and alive. Designed for creators who see beauty in motion."
+        badgeText="React Three Fiber"
+        badgeLabel="Experience"
+        ctaButtons={[
+          { text: "Explore the Canvas", href: "#explore", primary: true },
+          { text: "Learn More", href: "#learn-more" }
+        ]}
+        microDetails={[
+          "Immersive shader landscapes",
+          "Hand-tuned motion easing",
+          "Responsive, tactile feedback",
+        ]}
+      />
+    </div>
+  );
 }
 ```
 
 Copy-paste these files for dependencies:
+```tsx
+shadcn/badge
+import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
+
+import { cn } from "@/lib/utils"
+
+const badgeVariants = cva(
+  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  {
+    variants: {
+      variant: {
+        default:
+          "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
+        secondary:
+          "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        destructive:
+          "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
+        outline: "text-foreground",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  },
+)
+
+export interface BadgeProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof badgeVariants> {}
+
+function Badge({ className, variant, ...props }: BadgeProps) {
+  return (
+    <div className={cn(badgeVariants({ variant }), className)} {...props} />
+  )
+}
+
+export { Badge, badgeVariants }
+
+```
 ```tsx
 shadcn/button
 import * as React from "react"
@@ -219,7 +482,7 @@ export { Button, buttonVariants }
 
 Install NPM dependencies:
 ```bash
-framer-motion, @radix-ui/react-slot, class-variance-authority
+gsap, three, @gsap/react, @react-three/fiber, class-variance-authority, @radix-ui/react-slot
 ```
 
 Implementation Guidelines

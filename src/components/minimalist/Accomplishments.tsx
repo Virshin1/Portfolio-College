@@ -1,33 +1,60 @@
 import React from 'react';
 import { portfolioData } from '../../data/portfolioData';
+import { Award, Trophy, Star } from 'lucide-react';
 
 export const Accomplishments: React.FC = () => {
+  const getIcon = (index: number) => {
+    switch (index % 3) {
+      case 0:
+        return <Trophy className="w-4 h-4 text-zinc-300" />;
+      case 1:
+        return <Award className="w-4 h-4 text-zinc-300" />;
+      default:
+        return <Star className="w-4 h-4 text-zinc-300" />;
+    }
+  };
+
   return (
-    <section id="accomplishments" className="py-20 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto border-t border-zinc-900">
-      <div className="mb-10">
-        <h2 className="text-xs font-mono uppercase tracking-widest text-zinc-500 mb-2">
-          05 / Honors
-        </h2>
-        <h3 className="text-2xl font-bold font-display text-white">
-          Achievements & Recognition
+    <section id="accomplishments" className="py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto border-t border-zinc-800/60">
+      <div className="mb-12 space-y-2">
+        <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-zinc-500">
+          <Trophy className="w-3.5 h-3.5 text-zinc-400" />
+          <span>05 / Recognition & Honors</span>
+        </div>
+        <h3 className="text-3xl sm:text-4xl font-bold font-display text-white">
+          Achievements & Benchmarks
         </h3>
       </div>
 
-      <div className="space-y-4">
-        {portfolioData.accomplishments.map((acc) => (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {portfolioData.accomplishments.map((acc, index) => (
           <div
             key={acc.title}
-            className="p-5 rounded-lg border border-zinc-800 bg-zinc-950/40 space-y-2 hover:border-zinc-700 transition-colors"
+            className="glass-panel p-6 rounded-xl border border-zinc-800/80 space-y-3.5 flex flex-col justify-between hover:border-zinc-500 transition-all duration-300 group"
           >
-            <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1">
-              <h4 className="text-sm font-semibold text-white font-mono">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="p-2 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-300 group-hover:border-zinc-600 transition-colors">
+                  {getIcon(index)}
+                </div>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-zinc-800 text-zinc-400 bg-zinc-900/60">
+                  {acc.event}
+                </span>
+              </div>
+
+              <h4 className="text-base font-bold text-white font-mono leading-snug">
                 {acc.title}
               </h4>
-              <span className="text-xs font-mono text-zinc-500">{acc.event}</span>
+
+              <p className="text-xs sm:text-sm text-zinc-400 font-light leading-relaxed">
+                {acc.description}
+              </p>
             </div>
-            <p className="text-xs sm:text-sm text-zinc-400 font-light leading-relaxed">
-              {acc.description}
-            </p>
+
+            <div className="pt-3 border-t border-zinc-900/80 flex items-center gap-2 text-[11px] font-mono text-zinc-500">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <span>Verified Distinction</span>
+            </div>
           </div>
         ))}
       </div>

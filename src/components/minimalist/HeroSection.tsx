@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { portfolioData } from '../../data/portfolioData';
 import { GithubIcon } from '../common/Icons';
+import { BackgroundPathsContainer } from '../ui/background-paths';
 import { Terminal, ArrowUpRight, Cpu, Layers, Server, ShieldCheck } from 'lucide-react';
 
 interface HeroSectionProps {
@@ -13,14 +14,17 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onToggleMode, onOpenRe
 
   return (
     <section id="hero" className="relative min-h-[90vh] flex flex-col justify-center pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      {/* Looping Floating Background Paths from landing.md */}
+      <BackgroundPathsContainer className="opacity-50" />
+
       {/* Background Ambient Grid & Radial Spotlight */}
-      <div className="absolute inset-0 bg-tech-grid opacity-30 pointer-events-none [mask-image:radial-gradient(ellipse_70%_60%_at_50%_20%,#000_60%,transparent_100%)]" />
+      <div className="absolute inset-0 bg-tech-grid opacity-25 pointer-events-none [mask-image:radial-gradient(ellipse_70%_60%_at_50%_20%,#000_60%,transparent_100%)]" />
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-zinc-800/20 via-zinc-700/10 to-transparent rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-5xl mx-auto w-full relative z-10 space-y-12">
         {/* Top Status & Badge */}
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full border border-emerald-500/20 bg-emerald-950/20 text-emerald-400 font-mono text-xs shadow-sm">
+          <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full border border-emerald-500/20 bg-emerald-950/20 text-emerald-400 font-mono text-xs shadow-sm backdrop-blur-sm">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
@@ -67,7 +71,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onToggleMode, onOpenRe
 
               <button
                 onClick={onToggleMode}
-                className="px-5 py-3 rounded-md border border-zinc-800 hover:border-zinc-600 bg-zinc-950/80 hover:bg-zinc-900 text-zinc-200 font-mono text-xs transition-all duration-200 flex items-center gap-2 cursor-pointer group"
+                className="px-5 py-3 rounded-md border border-zinc-800 hover:border-zinc-600 bg-zinc-950/80 hover:bg-zinc-900 text-zinc-200 font-mono text-xs transition-all duration-200 flex items-center gap-2 cursor-pointer group backdrop-blur-sm"
               >
                 <Terminal className="w-3.5 h-3.5 text-zinc-400 group-hover:text-white transition-colors" />
                 <span>Launch Terminal Mode</span>
@@ -75,7 +79,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onToggleMode, onOpenRe
 
               <button
                 onClick={onOpenResume}
-                className="px-4 py-3 rounded-md border border-zinc-800 hover:border-zinc-600 text-zinc-400 hover:text-white font-mono text-xs transition-colors cursor-pointer"
+                className="px-4 py-3 rounded-md border border-zinc-800 hover:border-zinc-600 text-zinc-400 hover:text-white font-mono text-xs transition-colors cursor-pointer backdrop-blur-sm"
               >
                 Resume PDF
               </button>
@@ -84,7 +88,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onToggleMode, onOpenRe
                 href={portfolioData.github}
                 target="_blank"
                 rel="noreferrer"
-                className="p-3 rounded-md border border-zinc-800 hover:border-zinc-600 text-zinc-400 hover:text-white transition-colors"
+                className="p-3 rounded-md border border-zinc-800 hover:border-zinc-600 text-zinc-400 hover:text-white transition-colors backdrop-blur-sm"
                 title="GitHub Profile"
               >
                 <GithubIcon className="w-4 h-4" />
@@ -213,19 +217,19 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onToggleMode, onOpenRe
 
         {/* Quick Specs Strip */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-8 border-t border-zinc-800/60">
-          <div className="p-4 rounded-lg bg-zinc-900/20 border border-zinc-800/50">
+          <div className="p-4 rounded-lg bg-zinc-900/20 border border-zinc-800/50 backdrop-blur-sm">
             <div className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Degree</div>
             <div className="text-sm font-mono text-zinc-200 font-medium mt-1">B.Tech CSE (2024–2028)</div>
           </div>
-          <div className="p-4 rounded-lg bg-zinc-900/20 border border-zinc-800/50">
+          <div className="p-4 rounded-lg bg-zinc-900/20 border border-zinc-800/50 backdrop-blur-sm">
             <div className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Institution</div>
             <div className="text-sm font-mono text-zinc-200 font-medium mt-1">ITM Skills University</div>
           </div>
-          <div className="p-4 rounded-lg bg-zinc-900/20 border border-zinc-800/50">
+          <div className="p-4 rounded-lg bg-zinc-900/20 border border-zinc-800/50 backdrop-blur-sm">
             <div className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Primary Stack</div>
             <div className="text-sm font-mono text-zinc-200 font-medium mt-1">Cloud, DevOps & Distributed</div>
           </div>
-          <div className="p-4 rounded-lg bg-zinc-900/20 border border-zinc-800/50">
+          <div className="p-4 rounded-lg bg-zinc-900/20 border border-zinc-800/50 backdrop-blur-sm">
             <div className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Location</div>
             <div className="text-sm font-mono text-zinc-200 font-medium mt-1">Navi Mumbai, India</div>
           </div>

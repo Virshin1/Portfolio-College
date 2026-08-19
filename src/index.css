@@ -38,6 +38,32 @@
   background-size: 16px 16px;
 }
 
+/* Hardware-Accelerated Floating Path Animations */
+@keyframes flowPathAnim {
+  0% {
+    stroke-dashoffset: 1600;
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0.15;
+  }
+}
+
+.floating-path-svg {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.flowing-path-element {
+  stroke-dasharray: 800 800;
+  will-change: stroke-dashoffset, opacity;
+  animation: flowPathAnim linear infinite;
+}
+
 /* Glassmorphism & High-End Card Surfaces */
 .glass-panel {
   background: rgba(14, 14, 18, 0.6);

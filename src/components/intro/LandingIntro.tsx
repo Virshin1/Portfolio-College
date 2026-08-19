@@ -1,7 +1,7 @@
 import React from 'react';
 import { ShaderAnimation } from '../ui/shader-animation';
 import { portfolioData } from '../../data/portfolioData';
-import { ArrowDown, Terminal, Layout, ArrowRight } from 'lucide-react';
+import { Terminal, Layout, ArrowRight } from 'lucide-react';
 
 interface LandingIntroProps {
   onEnterMinimalist: () => void;
@@ -60,15 +60,6 @@ export const LandingIntro: React.FC<LandingIntroProps> = ({
           </button>
         </div>
       </div>
-
-      {/* Bottom Scroll Indicator */}
-      <button
-        onClick={onEnterMinimalist}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1.5 text-zinc-500 hover:text-zinc-300 transition-colors cursor-pointer"
-      >
-        <span className="text-[10px] font-mono tracking-widest uppercase">Scroll Down</span>
-        <ArrowDown className="w-3.5 h-3.5 animate-bounce" />
-      </button>
     </section>
   );
 };

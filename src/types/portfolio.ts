@@ -3,7 +3,7 @@ export interface Project {
   title: string;
   description: string;
   longDescription?: string;
-  category: 'Full-Stack' | 'Cloud & DevOps' | 'AI & Tools' | 'Frontend' | 'Academic';
+  category: 'Full-Stack' | 'Cloud & DevOps' | 'AI & Tools' | 'Frontend' | 'Academic' | 'Developer Tools';
   techStack: string[];
   githubUrl?: string;
   liveUrl?: string;
@@ -38,7 +38,9 @@ export interface Education {
   location: string;
   degree: string;
   period: string;
-  relevantCoursework: string[];
+  status?: string;
+  focus?: string[];
+  relevantCoursework?: string[];
 }
 
 export interface Accomplishment {
@@ -50,14 +52,18 @@ export interface Accomplishment {
 
 export interface PortfolioData {
   name: string;
-  role: string;
+  title?: string;
+  role?: string;
   tagline: string;
   location: string;
   email: string;
-  phone: string;
+  phone?: string;
   github: string;
-  githubUsername: string;
-  bio: string;
+  githubUsername?: string;
+  linkedin?: string;
+  timezone?: string;
+  status?: string;
+  bio?: string;
   education: Education;
   experiences: Experience[];
   skills: SkillCategory[];

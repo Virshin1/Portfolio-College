@@ -3,13 +3,13 @@ import { portfolioData } from '../../data/portfolioData';
 import type { Project } from '../../types/portfolio';
 import { Feature108, type FeatureTab } from '../ui/feature108';
 import { GithubIcon } from '../common/Icons';
-import { ArrowUpRight, Code, ExternalLink, Sparkles, Zap, Server, Cpu, Layout, Layers } from 'lucide-react';
+import { ArrowUpRight, Code, ExternalLink, Sparkles, Zap, Server, Cpu, Layout, Layers, Boxes, Bot, ShieldCheck } from 'lucide-react';
 
 export const ProjectsSection: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
-  const categories = ['All', 'Full-Stack', 'Cloud & DevOps', 'AI & Tools', 'Frontend'];
+  const categories = ['All', 'Full-Stack', 'Cloud & DevOps', 'AI & Tools', 'Developer Tools', 'Frontend'];
 
   const filteredProjects = selectedCategory === 'All'
     ? portfolioData.projects
@@ -20,6 +20,12 @@ export const ProjectsSection: React.FC = () => {
     switch (projectId) {
       case 'transit-live':
         return <Zap className="w-4 h-4 text-zinc-300 shrink-0" />;
+      case 'aegis':
+        return <ShieldCheck className="w-4 h-4 text-zinc-300 shrink-0" />;
+      case 'twelve-viva-platform':
+        return <Bot className="w-4 h-4 text-zinc-300 shrink-0" />;
+      case 'structura':
+        return <Boxes className="w-4 h-4 text-zinc-300 shrink-0" />;
       case 'ps-120':
         return <Server className="w-4 h-4 text-zinc-300 shrink-0" />;
       case 'ai-tools':

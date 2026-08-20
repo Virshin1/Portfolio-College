@@ -72,7 +72,7 @@ export const AboutSection: React.FC = () => {
                 <span>Core Engineering Coursework</span>
               </div>
               <div className="flex flex-wrap gap-1.5 pt-1">
-                {portfolioData.education.relevantCoursework.map((course) => (
+                {(portfolioData.education.relevantCoursework || portfolioData.education.focus || []).map((course) => (
                   <span
                     key={course}
                     className="text-xs font-mono px-2.5 py-1 rounded bg-zinc-900/80 border border-zinc-800 text-zinc-300 hover:border-zinc-600 transition-colors"
